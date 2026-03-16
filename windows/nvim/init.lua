@@ -29,6 +29,11 @@ vim.pack.add({
   { src = "https://github.com/kdheepak/lazygit.nvim" },
   { src = "https://github.com/nvim-lua/plenary.nvim" },
 
+  -- debug
+  { src = "https://github.com/mfussenegger/nvim-dap" },
+  { src = "https://github.com/rcarriga/nvim-dap-ui" },
+  { src = "https://github.com/nvim-neotest/nvim-nio" },
+
   -- mini
   { src = "https://github.com/nvim-mini/mini.extra" },
   { src = "https://github.com/nvim-mini/mini.pairs" },
@@ -80,7 +85,7 @@ vim.lsp.config("clangd", {
     "--background-index",
     -- The magic flag: point this to your exact MinGW g++ executable.
     -- Globs work too (e.g., "**/*g++*"), but an absolute path is usually safer on Windows.
-    "--query-driver=D:/dev/MinGW/bin/g++.exe",
+    "--query-driver=D:/dev/mingw64/bin/g++.exe",
   },
   init_options = {
     -- These flags are used when there is no compile_commands.json file
@@ -99,3 +104,4 @@ require('plugins.mini')
 require('plugins.avante')
 require('plugins.telescope')
 require('plugins.which-key')
+require('plugins.dap')
