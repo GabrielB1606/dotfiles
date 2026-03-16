@@ -19,10 +19,10 @@ dap.listeners.before.event_exited.dapui_config = function()
 end
 
 -- Keymaps for debugging
-vim.keymap.set("n", "<F5>", function() dap.continue() end, { desc = "Debug: Start/Continue" })
-vim.keymap.set("n", "<F10>", function() dap.step_over() end, { desc = "Debug: Step Over" })
-vim.keymap.set("n", "<F11>", function() dap.step_into() end, { desc = "Debug: Step Into" })
-vim.keymap.set("n", "<F12>", function() dap.step_out() end, { desc = "Debug: Step Out" })
+vim.keymap.set("n", "<leader>xr", function() dap.continue() end, { desc = "Debug: Start/Continue" })
+vim.keymap.set("n", "<leader>xo", function() dap.step_over() end, { desc = "Debug: Step Over" })
+vim.keymap.set("n", "<leader>xi", function() dap.step_into() end, { desc = "Debug: Step Into" })
+vim.keymap.set("n", "<leader>xO", function() dap.step_out() end, { desc = "Debug: Step Out" })
 vim.keymap.set("n", "<leader>xb", function() dap.toggle_breakpoint() end, { desc = "Debug: Toggle Breakpoint" })
 vim.keymap.set("n", "<leader>xB", function() dap.set_breakpoint(vim.fn.input("Breakpoint condition: ")) end,
   { desc = "Debug: Set Conditional Breakpoint" })
@@ -52,7 +52,7 @@ dap.configurations.cpp = {
 
       -- Compile the current file with debugging symbols (-g) and relative path
       -- This ensures GDB stores a relative path in DWARF to match nvim-dap's breakpoint paths
-      local obj = vim.system({'g++', '-g', file_name, '-o', out_name}, {cwd = file_dir}):wait()
+      local obj = vim.system({ 'g++', '-g', file_name, '-o', out_name }, { cwd = file_dir }):wait()
       if obj.code ~= 0 then
         print("Compilation failed!\n" .. obj.stderr)
         return nil
