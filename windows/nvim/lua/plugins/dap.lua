@@ -27,58 +27,58 @@ vim.keymap.set("n", "<leader>xb", function() dap.toggle_breakpoint() end, { desc
 vim.keymap.set("n", "<leader>xB", function() dap.set_breakpoint(vim.fn.input("Breakpoint condition: ")) end,
   { desc = "Debug: Set Conditional Breakpoint" })
 
--- Configure GDB as the debug adapter
--- NOTE: This requires GDB version 14.1 or higher. MinGW comes with GDB.
-dap.adapters.gdb = {
-  type = "executable",
-  command = "gdb",
-  args = { "-i", "dap" }
+-- codelldb adapter (supports runInTerminal for proper stdout/stdin)
+-- Installed at D:\dev\codelldb from https://github.com/vadimcn/codelldb/releases
+dap.adapters.codelldb = {
+  type = "server",
+  port = "${port}",
+  executable = {
+    command = "D:/dev/codelldb/extension/adapter/codelldb.exe",
+    args = { "--port", "${port}" },
+    detached = false,
+  },
 }
 
--- Configure C++ debugging
 dap.configurations.cpp = {
   {
     name = "Compile & Debug C++ file",
-    type = "gdb",
+    type = "codelldb",
     request = "launch",
     program = function()
-      local file_dir = vim.fn.expand("%:p:h")
-      local file_name = vim.fn.expand("%:t")
-      local out_name = vim.fn.expand("%:t:r") .. ".exe"
-      local out_path = file_dir .. "\\" .. out_name
+      local file = vim.fn.expand("%:p")
+      local out = vim.fn.expand("%:p:r") .. ".exe"
 
-      -- Print compilation message
-      print("Compiling " .. file_name .. " with g++...")
+      print("Compiling " .. file .. " with g++...")
 
-      -- Compile the current file with debugging symbols (-g) and relative path
-      -- This ensures GDB stores a relative path in DWARF to match nvim-dap's breakpoint paths
-      local obj = vim.system({ 'g++', '-g', file_name, '-o', out_name }, { cwd = file_dir }):wait()
-      if obj.code ~= 0 then
-        print("Compilation failed!\n" .. obj.stderr)
+      local cmd = string.format('g++ -g "%s" -o "%s"', file, out)
+      vim.fn.system(cmd)
+      if vim.v.shell_error ~= 0 then
+        print("Compilation failed!")
         return nil
       end
 
       print("Compilation successful, starting debugger...")
-      return out_path
+      return out
     end,
-    cwd = "${workspaceFolder}",
-    stopAtBeginningOfMainSubprogram = false,
-    console = "integratedTerminal",
-    runInTerminal = false,
+    cwd = function()
+      return vim.fn.expand("%:p:h")
+    end,
+    stopOnEntry = false,
+    terminal = "integrated",
   },
   {
     name = "Debug existing executable",
-    type = "gdb",
+    type = "codelldb",
     request = "launch",
     program = function()
       return vim.fn.input("Path to executable: ", vim.fn.getcwd() .. "/", "file")
     end,
-    cwd = "${workspaceFolder}",
-    stopAtBeginningOfMainSubprogram = false,
-    console = "integratedTerminal",
-    runInTerminal = false,
+    cwd = function()
+      return vim.fn.expand("%:p:h")
+    end,
+    stopOnEntry = false,
+    terminal = "integrated",
   },
 }
 
--- Reuse the C++ configuration for C files
 dap.configurations.c = dap.configurations.cpp
