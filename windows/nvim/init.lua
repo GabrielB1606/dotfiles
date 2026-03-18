@@ -23,11 +23,16 @@ vim.opt.softtabstop = 2  -- Number of spaces a <Tab> counts for when editing/del
 -- Packages
 vim.pack.add({
   -- basic
-  { src = "https://github.com/neovim/nvim-lspconfig" },
   { src = "https://github.com/folke/which-key.nvim" },
   { src = "https://github.com/nvim-telescope/telescope.nvim" },
   { src = "https://github.com/kdheepak/lazygit.nvim" },
+  { src = "https://github.com/neovim/nvim-lspconfig" },
   { src = "https://github.com/nvim-lua/plenary.nvim" },
+  {
+    src = 'https://github.com/nvim-treesitter/nvim-treesitter',
+    branch = "main",
+    build = ':TSUpdate'
+  },
 
   -- debug
   { src = "https://github.com/mfussenegger/nvim-dap" },
@@ -45,7 +50,7 @@ vim.pack.add({
 })
 
 -- LSP config
-vim.lsp.enable({ "lua_ls", "clangd" })
+vim.lsp.enable({ "lua_ls", "clangd", "glsl_analyzer", "ccls" })
 vim.keymap.set('n', '<leader>==', vim.lsp.buf.format) -- autoformatting
 
 --- Autocomplete
@@ -83,16 +88,13 @@ vim.lsp.config("clangd", {
   cmd = {
     "clangd",
     "--background-index",
-    -- The magic flag: point this to your exact MinGW g++ executable.
-    -- Globs work too (e.g., "**/*g++*"), but an absolute path is usually safer on Windows.
+    "--compile-commands-dir=build",
     "--query-driver=D:/dev/mingw64/bin/g++.exe",
   },
   init_options = {
-    -- These flags are used when there is no compile_commands.json file
     fallbackFlags = {
       "-target",
-      "x86_64-w64-mingw32", -- Forces clangd to use the MinGW ABI instead of MSVC
-      -- "-std=c++17"          -- Sets the C++ standard (change to c++20 if you prefer)
+      "x86_64-w64-mingw32",
     }
   }
 })
@@ -102,6 +104,7 @@ require('netrw')
 require('keymaps')
 require('plugins.mini')
 require('plugins.avante')
+require('plugins.treesitter')
 require('plugins.telescope')
 require('plugins.which-key')
 require('plugins.dap')

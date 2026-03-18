@@ -1,6 +1,11 @@
 local dap = require("dap")
 local dapui = require("dapui")
 
+-- Breakpoint sign: red dot instead of B
+vim.fn.sign_define("DapBreakpoint", { text = " ●", texthl = "DapBreakpoint", linehl = "", numhl = "" })
+vim.fn.sign_define("DapBreakpointCondition", { text = " ●", texthl = "DapBreakpoint", linehl = "", numhl = "" })
+vim.api.nvim_set_hl(0, "DapBreakpoint", { fg = "#e06c75" })
+
 -- Setup nvim-dap-ui
 dapui.setup()
 
